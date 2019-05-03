@@ -1,5 +1,6 @@
 ---
-title: "Uma história em slides"
+title: "LAB2-P2"
+atuhor: "João Pedro Costa e Nilton Ginani"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
@@ -55,25 +56,30 @@ Nossa análise demonstrou que as universidades particulares geralmente possuem u
 
 ```{r}
 
-infra = respostas %>% 
+medias = respostas %>% 
+    filter(categoria != "Outros") %>% 
+    filter(tema == "Relações professor-aluno") %>% 
+
+    group_by(UF, categoria) %>% 
+    summarise(media = mean(media))
+
+
+respostas %>% 
     filter(categoria == "Ensino, apoio e avaliacão") %>% 
     filter(tema == "Relações professor-aluno") %>% 
-    mutate(publica = substring(IES, 1, 2) %in% c("UE", "UF"))
-
-p = infra %>% 
-    ggplot(aes(x =  UF, 
-               y = media, 
-               color = publica, 
-               label = IES)) + 
-    geom_point(size = 2, alpha = .5)  + 
-    coord_flip() + 
-    theme(legend.position = "None") 
-p
-ggplotly(p)
+    
+  
+    ggplot(aes(x =  reorder(UF,media), y = media)) + 
+    geom_jitter(width = .1, alpha = .2) +
+    geom_point(data = filter(medias, categoria == "Ensino, apoio e avaliacão"),size = 2, alpha = .5, color = 'orange',shape = 15,size = 3) +
+ labs(
+        x = "UF",
+        y = "Avaliação"
+ )
 ```
 
 *** 
 
-Aqui procuramos observar a média nas categorias de Ensino,apoio e avaliação e perguntas com o tema "Relações professor aluno"
+Aqui procuramos observar a média nas categorias de "Ensino,apoio e avaliação" de todas as universidades do estado nas perguntas com o tema "Relações professor aluno"
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+A partir da observação do gŕafico podemos observar que o estado com a melhor média para as universidades no quesito "Relações professor aluno" foi o Amazonas, contudo só temos dados de uma única universidade do mesmo(podemos observar em outros estados que aconteceu o mesmo). Estados com mais universidades como RJ e MG tiveram notas bem variadas e possuem uma maior quantidade de universidades, por isso obtiveram uma média "menor" quando comparado com outros estados.
